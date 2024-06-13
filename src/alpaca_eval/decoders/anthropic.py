@@ -125,7 +125,15 @@ def _anthropic_completion_helper(
     response = None
     for _ in range(n_retries):
         try:
-            response = getattr(client, client_function_name).create(messages=prompt, **curr_kwargs)
+            prompt1 = prompt + '\n' + 'Write a very thorough response in two long parts. Begin part 1:'
+            response1 = getattr(client, client_function_name).create(messages=prompt1, **curr_kwargs)
+            response1 = response1.model_dump()
+            response1_text = response1["content"][0]["text"]
+
+            prompt2 = prompt1 + '\n\n[PART 1]\n'+ response1_text + '\n[END PART 1]'
+            prompt2 += '\nNow complete your thorough response with part 2:'
+
+            response = getattr(client, client_function_name).create(messages=prompt2, **curr_kwargs)
             response = response.model_dump()
             response["text"] = response["content"][0]["text"]
 
