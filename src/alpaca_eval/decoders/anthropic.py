@@ -135,7 +135,9 @@ def _anthropic_completion_helper(
 
             response = getattr(client, client_function_name).create(messages=prompt2, **curr_kwargs)
             response = response.model_dump()
-            response["text"] = response["content"][0]["text"]
+            response["text"] = response1_text + '\n' + response["content"][0]["text"]
+
+
 
             break
 
